@@ -1,12 +1,22 @@
 const express = require("express");
+
+
+// Routes
+const userRouter = require('./routes/user');
+const sessionRouter = require('./routes/session');
+
+
 const app = express();
 const port = process.env.port || 8000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use("/", userRouter);
+app.use("/session", sessionRouter);
+
 app.get("/", (req, res) => res.send("This is CutSession API"));
 
 app.listen(port, () => {
-    console.log(`Server running at http://localhost/${port}}`)
+    console.log(`Server running at http://localhost:${port}}`)
 });
