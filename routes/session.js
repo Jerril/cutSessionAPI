@@ -1,6 +1,5 @@
 const express = require("express");
 const sessionController = require("../controllers/session");
-const { route } = require("./auth");
 
 const router = express.Router();
 
@@ -11,9 +10,9 @@ router.post('/', sessionController.create_session);
 router.get('/', sessionController.fetch_sessions);
 
 // Book studio session
-route.post('/book', sessionController.book_session);
+router.post('/book', sessionController.book_session);
 
 // Retrieve session bookings
-router.post('/book', sessionController.fetch_session_bookings);
+router.get('/bookings', sessionController.fetch_session_bookings);
 
 module.exports = router;

@@ -12,7 +12,7 @@ exports.register_user = (req, res) => {
 }
 
 // Register merchant
-exports.register_user = (req, res) => {
+exports.register_merchant = (req, res) => {
     res.status(200).json({ "message": "Register merchant" });
 }
 

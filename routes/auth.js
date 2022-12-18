@@ -10,7 +10,7 @@ router.get('/clients', authController.list_clients);
 router.post('/users/register', authController.register_user);
 
 // Register merchants (studios)
-router.post('/merchant/register', authController.register_merchant);
+router.post('/merchants/register', authController.register_merchant);
 
 // Sign in clients(users & merchants)
 router.post('/signin', authController.signin_client);
