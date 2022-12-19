@@ -1,14 +1,4 @@
 const express = require("express");
-const { Pool } = require("pg");
-
-// Create DB Pool
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'cutsession',
-    password: 'postgres',
-    port: 5432
-});
 
 // routes
 const authRouter = require('./routes/auth');
