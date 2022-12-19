@@ -43,14 +43,38 @@ exports.register_user = [
             return res.status(500).json(error(err.message));
         }
     }
-];
+]
 
 // Register merchant
-exports.register_merchant = (req, res) => {
-    // Validate incoming data. Match it against expected data
-    // Insert record into DB
-    // Return response
-}
+exports.register_merchant = [
+    body("name").notEmpty().trim().isLength({ min: 2 }).escape(),
+    body("email").notEmpty().normalizeEmail().isEmail(),
+    body("password").notEmpty().trim().isLength({ min: 6 }).escape(),
+    body("phoneNumber").notEmpty().trim().isLength({ min: 9 }).escape(),
+    body("cityOfOperation").notEmpty().trim().isIn(['lagos', 'abuja']).escape(),
+    async(req, res, next) => {
+        // check if there's validation error
+        let errors = validationResult(req);
+
+        if (!errors.isEmpty()) return res.status(422).json(error('validation error', errors.array()));
+
+        try {
+            // Check if email already exists
+            let exists = await db.query('SELECT * FROM merchants WHERE email=$1', [req.body.email]);
+            if (exists.rowCount >= 1) return res.status(422).json(error('Email already exist'));
+
+            // Hash password
+            let passwordHash = await bcrypt.hash(req.body.password, 10);
+
+            let newMerchant = await db.query('INSERT INTO merchants(name, email, password, cityOfOperation, phoneNumber) VALUES($1, $2, $3, $4, $5) RETURNING *', [req.body.name, req.body.email, passwordHash, req.body.cityOfOperation, req.body.phoneNumber]);
+
+            res.status(201).json(success('Merchant created successfully', newMerchant.rows));
+
+        } catch (err) {
+            return res.status(500).json(error(err.message));
+        }
+    }
+];
 
 // Sign in client
 exports.signin_client = (req, res) => {
