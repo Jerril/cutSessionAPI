@@ -6,8 +6,15 @@ const { success, error } = require('../utils/responseApi');
 // List clients
 exports.list_clients = async(req, res) => {
     try {
-        let result = await db.query('SELECT * FROM USERS');
-        res.status(200).json(success("App clients", result.rows));
+        let users = await db.query('SELECT * FROM users');
+        let merchants = await db.query('SELECT * FROM merchants');
+
+        let clients = {
+            users: users.rows,
+            merchants: merchants.rows,
+        }
+
+        res.status(200).json(success("App clients", clients));
     } catch (err) {
         res.status(500).json(error("Error getting the info", err))
     }
