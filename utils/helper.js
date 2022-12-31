@@ -8,7 +8,9 @@ exports.emailExists = async(email) => {
     return false;
 }
 
-exports.matchPassword = () => {}
+exports.matchPassword = async(password, hashPassword) => {
+    return bcrypt.compare(password, hashPassword)
+}
 
 exports.hashPassword = async(password) => {
     let salt = await bcrypt.genSalt(10);
