@@ -4,7 +4,7 @@ const JWTStrategy = require('passport-jwt').Strategy;
 const extractJWT = require('passport-jwt').ExtractJwt;
 const { emailExists, matchPassword } = require('../utils/helper');
 
-// passport setup
+// passport setup (local strategy)
 passport.use(
     new LocalStrategy({
         usernameField: 'email',
@@ -12,10 +12,10 @@ passport.use(
     }, async(email, password, done) => {
         try {
             let client = await emailExists(email);
-            if (!client) return done(null, false, { message: "Incorrect email" });
+            if (!client) return done(null, false, { message: 'Incorrect email' });
 
-            let isMatch = await matchPassword(password, user.password);
-            if (!isMatch) return done(null, false, { message: "Incorrect password" });
+            let isMatch = await matchPassword(password, client.password);
+            if (!isMatch) return done(null, false, { message: 'Incorrect password' });
 
             return done(null, client);
         } catch (err) {
@@ -24,6 +24,7 @@ passport.use(
     })
 );
 
+// Jwt token verification
 passport.use(
     new JWTStrategy({
             jwtFromRequest: extractJWT.fromAuthHeaderAsBearerToken(),

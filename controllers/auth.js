@@ -46,22 +46,17 @@ exports.register_client = async(req, res, next) => {
 // Sign in client
 exports.signin_client = async(req, res) => {
     try {
-        passport.authenticate("local", { session: false }, (err, client) => {
-            if (err || !client) {
-                return res.status(401).json(error('Incorrect Email or Password', client))
-            }
+        // Authenticate client
+        passport.authenticate('local', { session: false }, async(err, client) => {
+            if (err || !client) return res.status(400).json(error('Wrong email or password'));
 
-            jwt.sign({ id: client.id, email: client.email },
-                'ekoonibaje', { expiresIn: "30m" },
-                (err, token) => {
-                    if (err) return res.status(400).json(err);
-                    let data = {
-                        token: token,
-                        client
-                    }
-                    res.status(200).json(success('Login Successful', data));
-                });
-        })(req, res)
+            // Genetate token
+            let token = await jwt.sign({ id: client.id, email: client.email }, 'ekoonibaje', { expiresIn: "30m" })
+            if (!token) return res.status(400).json(error('Error generating jwt-token'));
+
+            return res.status(200).json(success('Login Successful', { token, client }));
+        })(req, res);
+
     } catch (err) {
         return res.status(500).json(error(err.message));
     }
