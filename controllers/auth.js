@@ -1,10 +1,9 @@
 const db = require('../config/db');
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
-const bcrypt = require('bcryptjs');
 const { success, error } = require('../utils/responseApi');
 const { AccessType } = require('../utils/constants');
-const { emailExists } = require('../utils/helper');
+const { emailExists, hashPassword } = require('../utils/helper');
 
 // List clients
 exports.list_clients = async(req, res) => {
@@ -21,13 +20,24 @@ exports.list_clients = async(req, res) => {
 exports.register_client = async(req, res, next) => {
     try {
         // Check if email exists
-        if (emailExists(req.body.email)) res.status(422).json(error('Email already exist'));
+        if (await emailExists(req.body.email)) res.status(422).json(error('Email already exist'));
 
         // Hash password
-        let passwordHash = await bcrypt.hash(req.body.password, 10);
-        let newClient = await db.query('INSERT INTO clients(name, email, password, phoneNumber, city, accessType, dob) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *', [req.body.name, req.body.email, passwordHash, req.body.phoneNumber, req.body.city, req.body.accessType, req.body.dob ? req.body.dob : null]);
+        const passwordHash = await hashPassword(req.body.password);
 
-        res.status(201).json(success('Client created successfully', newClient.rows));
+        let newClient = await db.query(
+            'INSERT INTO clients(name, email, password, phoneNumber, city, accessType, dob) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *', [
+                req.body.name,
+                req.body.email,
+                passwordHash,
+                req.body.phoneNumber,
+                req.body.city,
+                req.body.accessType,
+                req.body.dob ? req.body.dob : null
+            ]
+        );
+
+        return res.status(201).json(success('Client created successfully', newClient.rows));
     } catch (err) {
         return res.status(500).json(error(err.message));
     }
