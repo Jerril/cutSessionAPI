@@ -4,11 +4,13 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require('bcryptjs');
 const { success, error } = require('../utils/responseApi');
 const { AccessType } = require('../utils/constants');
+const { emailExists } = require('../utils/helper');
 
 // List clients
 exports.list_clients = async(req, res) => {
     try {
         let clients = await db.query('SELECT * FROM clients');
+
         res.status(200).json(success("App clients", clients.rows));
     } catch (err) {
         res.status(500).json(error("Error getting the info", err))
@@ -18,9 +20,8 @@ exports.list_clients = async(req, res) => {
 // Register client
 exports.register_client = async(req, res, next) => {
     try {
-        // Check if email already exists
-        let exists = await db.query('SELECT * FROM clients WHERE email=$1', [req.body.email]);
-        if (exists.rowCount >= 1) return res.status(422).json(error('Email already exist'));
+        // Check if email exists
+        if (emailExists(req.body.email)) res.status(422).json(error('Email already exist'));
 
         // Hash password
         let passwordHash = await bcrypt.hash(req.body.password, 10);

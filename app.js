@@ -1,8 +1,6 @@
-// Import modules
 const express = require('express');
 const passport = require('./config/passport');
 
-// Import routes modules
 const authRouter = require('./routes/auth');
 const sessionRouter = require('./routes/session');
 
@@ -12,7 +10,6 @@ const port = process.env.port || 8000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Set the routes
 app.use('/', authRouter);
 app.use('/session', passport.authenticate('jwt', { session: false }), sessionRouter);
 
