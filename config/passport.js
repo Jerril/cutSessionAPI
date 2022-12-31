@@ -1,9 +1,8 @@
 const passport = require('passport');
-const bcrypt = require('bcryptjs');
 const LocalStrategy = require('passport-local').Strategy;
 const JWTStrategy = require('passport-jwt').Strategy;
 const extractJWT = require('passport-jwt').ExtractJwt;
-const db = require('./db');
+const { emailExists, matchPassword } = require('../utils/helper');
 
 // passport setup
 passport.use(
@@ -12,15 +11,13 @@ passport.use(
         passwordField: 'password'
     }, async(email, password, done) => {
         try {
-            let client = await db.query('SELECT * FROM clients WHERE email=$1', [email]);
-            if (client.rowCount < 1) return done(null, false, { message: "Incorrect email" });
+            let client = await emailExists(email);
+            if (!client) return done(null, false, { message: "Incorrect email" });
 
-            client = client.rows[0];
+            let isMatch = await matchPassword(password, user.password);
+            if (!isMatch) return done(null, false, { message: "Incorrect password" });
 
-            bcrypt.compare(password, client.password, (err, res) => {
-                if (res) return done(null, client);
-                else return done(null, false, { message: "Incorrect password" });
-            });
+            return done(null, client);
         } catch (err) {
             return done(err);
         }
