@@ -28,8 +28,8 @@ exports.signin = [
 ]
 
 exports.create_session = [
-    body('startsAt').notEmpty().trim(),
-    body('endsAt').notEmpty().trim(),
+    body('startsAt').notEmpty().trim().isISO8601.toDate(),
+    body('endsAt').notEmpty().trim().isISO8601.toDate(),
     body('type').isIn(SessionType.all).escape(),
     (req, res, next) => {
         let errors = validationResult(req);
