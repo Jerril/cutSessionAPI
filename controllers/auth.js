@@ -1,28 +1,22 @@
-const db = require('../config/db');
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
+const db = require('../config/db');
 const { success, error } = require('../utils/responseApi');
-const { AccessType } = require('../utils/constants');
 const { emailExists, hashPassword } = require('../utils/helper');
 
-// List clients
 exports.list_clients = async(req, res) => {
     try {
         let clients = await db.query('SELECT * FROM clients');
-
-        res.status(200).json(success("App clients", clients.rows));
+        return res.status(200).json(success("App clients", clients.rows));
     } catch (err) {
-        res.status(500).json(error("Error getting the info", err))
+        return res.status(500).json(error("Error getting the info", err))
     }
 }
 
-// Register client
 exports.register_client = async(req, res, next) => {
     try {
-        // Check if email exists
-        if (await emailExists(req.body.email)) res.status(422).json(error('Email already exist'));
+        if (await emailExists(req.body.email)) return res.status(422).json(error('Email already exist'));
 
-        // Hash password
         const passwordHash = await hashPassword(req.body.password);
 
         let newClient = await db.query(
@@ -43,7 +37,6 @@ exports.register_client = async(req, res, next) => {
     }
 }
 
-// Sign in client
 exports.signin_client = async(req, res) => {
     try {
         // Authenticate client
@@ -52,7 +45,7 @@ exports.signin_client = async(req, res) => {
 
             // Genetate token
             let token = await jwt.sign({ id: client.id, email: client.email }, 'ekoonibaje', { expiresIn: "30m" })
-            if (!token) return res.status(400).json(error('Error generating jwt-token'));
+            if (!token) return res.status(400).json(error('Error generating jwt'));
 
             return res.status(200).json(success('Login Successful', { token, client }));
         })(req, res);
