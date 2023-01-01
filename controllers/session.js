@@ -1,11 +1,5 @@
-// Import
-
 // Create studio session
 exports.create_session = (req, res) => {
-    // Get the auth user
-    return res.status(200).json(req.user);
-    // Get the session timing
-    // validate if it follows the necessary requirement
     return res.status(200).json({ "message": "Create session" });
 }
 
@@ -16,6 +10,7 @@ exports.fetch_sessions = (req, res) => {
 
 // Book studio session
 exports.book_session = (re, res) => {
+    // 
     return res.status(200).json({ "message": "Book studio session" });
 }
 

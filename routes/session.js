@@ -1,19 +1,15 @@
 const express = require("express");
 const sessionController = require("../controllers/session");
+const requestValidation = require('../utils/requestValidation');
 
 const router = express.Router();
 
-/*
-    Merchant
-*/
+
 // Create studio session
-router.post('/', sessionController.create_session);
+router.post('/', requestValidation.create_session, sessionController.create_session);
 // Fetch studio sessions
 router.get('/', sessionController.fetch_sessions);
 
-/*
-    Customer
-*/
 // Book studio session
 router.post('/book', sessionController.book_session);
 // Retrieve session bookings

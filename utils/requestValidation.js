@@ -1,6 +1,6 @@
 const { body, validationResult } = require('express-validator');
 const { success, error } = require('../utils/responseApi');
-const { AccessType } = require('./constants');
+const { AccessType, SessionType } = require('./constants');
 
 exports.signup = [
     body("name").notEmpty().trim().isLength({ min: 2 }).escape(),
@@ -26,3 +26,14 @@ exports.signin = [
         next();
     }
 ]
+
+exports.create_session = [
+    body('startsAt').notEmpty().trim(),
+    body('endsAt').notEmpty().trim(),
+    body('type').isIn(SessionType.all).escape(),
+    (req, res, next) => {
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(422).json(error('validation error', errors.array()))
+        next();
+    }
+];
