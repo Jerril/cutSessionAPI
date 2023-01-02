@@ -44,7 +44,7 @@ exports.signin_client = async(req, res) => {
             if (err || !client) return res.status(400).json(error('Wrong email or password'));
 
             // Genetate token
-            let token = await jwt.sign({ id: client.id, email: client.email }, 'ekoonibaje', { expiresIn: "30m" })
+            let token = await jwt.sign({ id: client.id, email: client.email, accesstype: client.accesstype }, 'ekoonibaje', { expiresIn: "30m" })
             if (!token) return res.status(400).json(error('Error generating jwt'));
 
             return res.status(200).json(success('Login Successful', { token, client }));
