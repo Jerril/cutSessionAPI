@@ -37,7 +37,7 @@ exports.create_session = [
         if (!errors.isEmpty()) return res.status(422).json(error('validation error', errors.array()))
 
         // 1. Check if its a valid time
-        if (!isTimeValid) return res.status(422).json(error('validation error', 'The provided date is not valid'))
+        if (!isTimeValid(req.body.startsAt)) return res.status(422).json(error('validation error', 'The provided date is not valid'))
             // 2. endsAt must be greater than startsAt
             // 3. The difference between the two time must be either (45, 60, 90)
             // ==================
