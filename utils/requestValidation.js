@@ -45,7 +45,7 @@ exports.create_session = [
         let startsAt = req.body.startsAt.split(":");
         let startsAtMins = (parseInt(startsAt[0]) * 60) + parseInt(startsAt[1]);
 
-        if (startsAt > endsAt) return res.status(422).json(error('validation error: End Time must be greater than start time', ))
+        if (startsAtMins > endsAtMins) return res.status(422).json(error('validation error: End Time must be greater than start time', ))
             // 3. The difference between the two time must be either (45, 60, 90)
             // ==================
             // Type: Weekday, time between 9am-8pm
