@@ -39,6 +39,13 @@ exports.create_session = [
         // 1. Check if its a valid time
         if (!isTimeValid(req.body.startsAt)) return res.status(422).json(error('validation error', 'The provided date is not valid'))
             // 2. endsAt must be greater than startsAt
+        let endsAt = req.body.endsAt.split(":");
+        let endsAtMins = (parseInt(endsAt[0]) * 60) + parseInt(endsAt[1]);
+
+        let startsAt = req.body.startsAt.split(":");
+        let startsAtMins = (parseInt(startsAt[0]) * 60) + parseInt(startsAt[1]);
+
+        if (startsAt > endsAt) return res.status(422).json(error('validation error: End Time must be greater than start time', ))
             // 3. The difference between the two time must be either (45, 60, 90)
             // ==================
             // Type: Weekday, time between 9am-8pm
